@@ -11,44 +11,41 @@ import numpy as np
 import pandas as pd
 import pydub
 
-def parseWav(sample1, sample2):
+def mp3towav(filename):
+	sound = pydub.AudioSegment.from_mp3(filename+".mp3")
+	sound.export(filename+".wav", format="wav")
+
+def parseWav(sample):
 	# todo: parse whole song
 	print('reading input')
-	rate, music1 = read('Samples/'+sample1+'.wav')
-	rate, music2 = read('Samples/'+sample2+'.wav')
+	rate, music = read('Samples/'+sample+'.wav')
 
 	# part of the song converted to a dataframe
 	# default in scipy: 44,100 samples/sec
-	print('parsing '+sample1+'.wav')
-	music1 = pd.DataFrame(music1[0:400000, :])
-	music2 = pd.DataFrame(music2[400001:800000, :])
+	print('parsing '+sample+'.wav')
+	music = pd.DataFrame(music[0:800000, :])
 
-	return music1, music2, rate
+	return music1, rate
 
 # create training data by shifting the music data
 # todo: save whole song
-def prepareData(df, s1, s2, look_back=3, train=True):
+def prepareData(df, s, look_back=3, train=True):
 
-	dataX1, dataX2 , dataY1 , dataY2 = [],[],[],[]
+	dataX, dataY = [],[]
 
 	size = range(len(df)-look_back-1)
 	for i in size:
-
-		dataX1.append(df.iloc[i : i + look_back, 0].values)
-		dataX2.append(df.iloc[i : i + look_back, 1].values)
+		# 0 vs 1?
+		dataX.append(df.iloc[i : i + look_back, 0].values)
 		if train:
-			dataY1.append(df.iloc[i + look_back, 0])
-			dataY2.append(df.iloc[i + look_back, 1])
+			dataY.append(df.iloc[i + look_back, 0])
 	if train:
-		np.save('Samples/'+s1+'X.npy', dataX1)
-		np.save('Samples/'+s2+'X.npy', dataX2)
-		np.save('Samples/'+s1+'Y.npy', dataY1)
-		np.save('Samples/'+s2+'Y.npy', dataY2)
-		return np.array(dataX1), np.array(dataX2), np.array(dataY1), np.array(dataY2)
+		np.save('Samples/'+s+'X.npy', dataX)
+		np.save('Samples/'+s+'Y.npy', dataY)
+		return np.array(dataX), np.array(dataY)
 	else:
-		np.save('Samples/'+s1+'TX.npy', dataX1)
-		np.save('Samples/'+s2+'TX.npy', dataX2)
-		return np.array(dataX1), np.array(dataX2)
+		np.save('Samples/'+s+'TX.npy', dataX)
+		return np.array(dataX)
 
 def initModel():
 	print('creating model')

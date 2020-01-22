@@ -12,15 +12,21 @@ import pandas as pd
 import pydub
 from methods import *
 
-#utility. calling this to create data from wavs
+#utility. calling this to create data from wavs or mp3
 
-wav1 = sys.argv[1]
-print(wav1+'.wav')
-music1, music2, rate = parseWav(wav1, wav1)
+filename = sys.argv[1]
+
+if(filename[:-3] == 'mp3'):
+    # parse mp3 into wav
+    mp3towav(filename[:-4])
+
+wav = filename[:-4]
+
+music, rate = parseWav(wav)
 
 #training
 print('training data')
-prepareData(pd.concat([music1.iloc[0:160000, :], music2.iloc[0:160000, :]], axis=0), wav1, wav1, look_back=3, train=True)
+prepareData(music.iloc[0:320000, :],wav1, look_back=3, train=True)
 #evaluation data
 print('testing data')
-prepareData(pd.concat([music1.iloc[160001 : 400000, :], music2.iloc[160001 : 400000, :]], axis=0), wav1, wav1, look_back=3, train=False)
+prepareData(music.iloc[320001 : 800000, :], wav1, look_back=3, train=False)
