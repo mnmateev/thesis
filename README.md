@@ -11,8 +11,8 @@ predictionMethods.py - methods which parse the model's output into a MIDI file.
 
 Libraries required:
 
-numpy
-pandas
-sklearn
-tensorflow/keras (all of the above for ML)
-mido (for reading and writing MIDI files)
+- numpy
+- pandas
+- sklearn
+- tensorflow/keras (all of the above for ML)
+- mido (for reading and writing MIDI files)
